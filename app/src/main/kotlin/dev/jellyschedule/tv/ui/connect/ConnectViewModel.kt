@@ -51,6 +51,8 @@ class ConnectViewModel(private val graph: AppGraph) : ViewModel() {
                 _events.tryEmit(ConnectEvent.Connected)
             } catch (e: Exception) {
                 _state.update { it.copy(connecting = false, error = describe(e)) }
+            } catch (e: LinkageError) {
+                _state.update { it.copy(connecting = false, error = "The app is missing a component: $e") }
             }
         }
     }
@@ -68,6 +70,8 @@ class ConnectViewModel(private val graph: AppGraph) : ViewModel() {
                 }
             } catch (e: Exception) {
                 _state.update { it.copy(error = "Could not search the network: ${e.message ?: e.javaClass.simpleName}") }
+            } catch (e: LinkageError) {
+                _state.update { it.copy(error = "The app is missing a component: $e") }
             } finally {
                 _state.update { it.copy(discovering = false) }
             }
