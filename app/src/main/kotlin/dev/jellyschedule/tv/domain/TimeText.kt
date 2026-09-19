@@ -20,12 +20,12 @@ object TimeText {
     /** "today 20:00", "tomorrow 20:00", "Thursday 20:00" or "Thu 25 Sep 20:00". */
     fun relative(t: OffsetDateTime, now: OffsetDateTime, locale: Locale = Locale.getDefault()): String {
         val hm = wallTime(t)
-        return when (val diff = dayDifference(t, now)) {
+        return when (dayDifference(t, now)) {
             0L -> "today $hm"
             1L -> "tomorrow $hm"
             -1L -> "yesterday $hm"
             in 2L..6L -> "${t.dayOfWeek.getDisplayName(TextStyle.FULL, locale)} $hm"
-            else -> "${dateLabel(t.toLocalDate(), locale)} $hm".also { if (diff < 0) Unit }
+            else -> "${dateLabel(t.toLocalDate(), locale)} $hm"
         }
     }
 

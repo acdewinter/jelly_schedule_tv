@@ -275,6 +275,5 @@ private fun OffAirCard(
             if (upNext != null) TvButton("Watch early", onClick = { onWatchEarly(upNext) }, icon = Icons.Default.PlayArrow)
             TvButton("Settings", onClick = onSettings, icon = Icons.Default.Settings)
         }
-        Box(Modifier.fillMaxWidth().height(1.dp))
     }
 }

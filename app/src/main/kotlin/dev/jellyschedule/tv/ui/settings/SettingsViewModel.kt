@@ -55,19 +55,18 @@ data class SettingsUiState(
 }
 
 class SettingsViewModel(private val graph: AppGraph) : ViewModel() {
+    private val capabilities: DeviceProfileBuilder.Capabilities? = runCatching { graph.deviceProfiles.capabilities }.getOrNull()
+
     val state: StateFlow<SettingsUiState> = combine(graph.sessions.session, graph.sessions.preferences, graph.schedule.state) { session, prefs, household ->
         SettingsUiState(session, prefs, household, capabilities, BuildConfig.VERSION_NAME)
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        SettingsUiState(graph.sessions.current, graph.sessions.preferences.value, graph.schedule.cachedState, null, BuildConfig.VERSION_NAME),
+        SettingsUiState(graph.sessions.current, graph.sessions.preferences.value, graph.schedule.cachedState, capabilities, BuildConfig.VERSION_NAME),
     )
-
-    private var capabilities: DeviceProfileBuilder.Capabilities? = null
 
     init {
         viewModelScope.launch {
-            capabilities = runCatching { graph.deviceProfiles.capabilities }.getOrNull()
             if (graph.schedule.cachedState == null) runCatching { graph.schedule.refreshState() }
         }
     }

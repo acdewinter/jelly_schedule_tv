@@ -85,7 +85,6 @@ fun RecordingsScreen(onPlay: (Airing, Boolean) -> Unit, onBack: () -> Unit) {
 
 @Composable
 private fun RecordingsList(state: RecordingsUiState, vm: RecordingsViewModel, onPlay: (Airing, Boolean) -> Unit) {
-    val focus = rememberInitialFocus(state.recordings.firstOrNull()?.recording?.id)
     Column(Modifier.fillMaxSize().background(JellyColors.Background).padding(horizontal = 48.dp, vertical = 28.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("Recordings", style = MaterialTheme.typography.headlineLarge)
@@ -115,8 +114,6 @@ private fun RecordingsList(state: RecordingsUiState, vm: RecordingsViewModel, on
             }
         }
     }
-    // Focus is requested on the first row's Play button through focusFirst.
-    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
 }
 
 @Composable

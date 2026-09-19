@@ -382,7 +382,8 @@ class PlayerViewModel(private val graph: AppGraph) : ViewModel() {
                 scheduleOverlayHide()
                 if (mode == PlaybackMode.Live) {
                     refreshNextLabel(airing)
-                    background.launch { graph.watchNext.publish(airing, ticks / TuneInRules.TICKS_PER_MILLISECOND, durationMs()) }
+                    val duration = durationMs()
+                    background.launch { graph.watchNext.publish(airing, ticks / TuneInRules.TICKS_PER_MILLISECOND, duration) }
                 }
             } catch (e: Exception) {
                 onFailure(e)
@@ -475,7 +476,10 @@ class PlayerViewModel(private val graph: AppGraph) : ViewModel() {
             runCatching { playback.reportStopped(s, pos) }
             mirror(s, pos, final = false)
             val airing = current
-            if (mode == PlaybackMode.Live && airing != null) background.launch { graph.watchNext.publish(airing, pos / TuneInRules.TICKS_PER_MILLISECOND, durationMs()) }
+            if (mode == PlaybackMode.Live && airing != null) {
+                val duration = durationMs()
+                background.launch { graph.watchNext.publish(airing, pos / TuneInRules.TICKS_PER_MILLISECOND, duration) }
+            }
         }
         ended = true
         session = null
