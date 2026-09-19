@@ -13,3 +13,13 @@
 -keepclasseswithmembers class org.jellyfin.sdk.model.** { kotlinx.serialization.KSerializer serializer(...); }
 
 # OkHttp / Media3 ship their own consumer rules; nothing to add.
+
+# Optional logging backends referenced by the Jellyfin SDK's kotlin-logging but not shipped.
+-dontwarn org.slf4j.Logger
+-dontwarn org.slf4j.LoggerFactory
+-dontwarn org.slf4j.Marker
+-dontwarn org.slf4j.MarkerFactory
+-dontwarn org.slf4j.event.Level
+-dontwarn org.slf4j.spi.CallerBoundaryAware
+-dontwarn org.slf4j.spi.LocationAwareLogger
+-dontwarn org.slf4j.spi.LoggingEventBuilder

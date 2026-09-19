@@ -380,7 +380,10 @@ class PlayerViewModel(private val graph: AppGraph) : ViewModel() {
                 background.launch { runCatching { playback.reportStart(s, ticks, paused = false, subtitleIndex = selectedSubtitleIndex) } }
                 startReporting()
                 scheduleOverlayHide()
-                if (mode == PlaybackMode.Live) refreshNextLabel(airing)
+                if (mode == PlaybackMode.Live) {
+                    refreshNextLabel(airing)
+                    background.launch { graph.watchNext.publish(airing, ticks / TuneInRules.TICKS_PER_MILLISECOND, durationMs()) }
+                }
             } catch (e: Exception) {
                 onFailure(e)
             }
@@ -440,8 +443,9 @@ class PlayerViewModel(private val graph: AppGraph) : ViewModel() {
         when (val decision = AutoAdvance.decide(now, airing, clock.now())) {
             is AdvanceDecision.PlayNext -> launchPlayback(decision.airing, PlaybackMode.Live)
             is AdvanceDecision.Countdown -> startCountdown(decision.upNext)
-            is AdvanceDecision.OffAir -> _state.update {
-                it.copy(phase = PlayerPhase.OffAir(decision.nextWindowStart), controlsVisible = false, menu = PlayerMenu.None)
+            is AdvanceDecision.OffAir -> {
+                background.launch { graph.watchNext.clear() }
+                _state.update { it.copy(phase = PlayerPhase.OffAir(decision.nextWindowStart), controlsVisible = false, menu = PlayerMenu.None) }
             }
         }
     }
@@ -470,6 +474,8 @@ class PlayerViewModel(private val graph: AppGraph) : ViewModel() {
             val pos = positionTicks()
             runCatching { playback.reportStopped(s, pos) }
             mirror(s, pos, final = false)
+            val airing = current
+            if (mode == PlaybackMode.Live && airing != null) background.launch { graph.watchNext.publish(airing, pos / TuneInRules.TICKS_PER_MILLISECOND, durationMs()) }
         }
         ended = true
         session = null

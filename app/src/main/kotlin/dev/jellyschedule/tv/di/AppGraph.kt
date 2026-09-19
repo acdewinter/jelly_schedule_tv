@@ -8,6 +8,7 @@ import dev.jellyschedule.tv.data.repo.ScheduleRepository
 import dev.jellyschedule.tv.data.repo.SessionRepository
 import dev.jellyschedule.tv.data.session.SessionStore
 import dev.jellyschedule.tv.player.DeviceProfileBuilder
+import dev.jellyschedule.tv.tvprovider.WatchNextPublisher
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -28,4 +29,5 @@ class AppGraph(context: Context) {
     val schedule = ScheduleRepository(pluginApi, sessions, clock)
     val deviceProfiles = DeviceProfileBuilder(appContext)
     val playback = PlaybackRepository(sessions, deviceProfiles)
+    val watchNext = WatchNextPublisher(appContext, sessions)
 }
