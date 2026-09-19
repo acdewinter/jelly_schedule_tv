@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#141A2B"
+        android:pathData="M0,0h320v180H0z" />
+    <path
+        android:fillColor="#7C5CFF"
+        android:pathData="M0,0h320v180H0z"
+        android:fillAlpha="0.12" />
+    <!-- TV outline -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:fillColor="#00000000"
+        android:pathData="M46,52 h96 a8,8 0 0 1 8,8 v56 a8,8 0 0 1 -8,8 h-96 a8,8 0 0 1 -8,-8 v-56 a8,8 0 0 1 8,-8 z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M74,30 L94,50 L114,30" />
+    <!-- play triangle -->
+    <path
+        android:fillColor="#7C5CFF"
+        android:pathData="M84,70 L112,88 L84,106 z" />
+    <!-- wordmark: "Jelly" and "Schedule" as blocks -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M172,66 h110 v14 h-110 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.7"
+        android:pathData="M172,92 h84 v10 h-84 z" />
+    <path
+        android:fillColor="#7C5CFF"
+        android:pathData="M172,112 h50 v8 h-50 z" />
+</vector>
