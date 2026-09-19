@@ -3,6 +3,9 @@ package dev.jellyschedule.tv.ui.player
 import android.view.KeyEvent as AndroidKeyEvent
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -206,66 +209,63 @@ private fun PlayingOverlay(state: PlayerUiState, vm: PlayerViewModel) {
             )
         }
     }
-    if (!state.overlayVisible) return
-
-    // Top: channel bug, title, subtitle.
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)))
-            .padding(horizontal = 48.dp, vertical = 32.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            when (state.mode) {
-                PlaybackMode.Live -> LivePill("LIVE")
-                PlaybackMode.Recording -> LivePill("RECORDING", color = JellyColors.Rec)
-                PlaybackMode.Watch -> Unit
-            }
-            if (state.playMethod != null) Text(state.playMethod, style = MaterialTheme.typography.labelSmall, color = JellyColors.Muted)
-        }
-        Spacer(Modifier.height(8.dp))
-        Text(airing.displayTitle, style = MaterialTheme.typography.headlineLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(airing.displaySubtitle, style = MaterialTheme.typography.titleLarge, color = JellyColors.Muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
-
-    // Bottom: progress, next, controls.
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(top = 300.dp),
-        verticalArrangement = Arrangement.Bottom,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))))
-                .padding(horizontal = 48.dp, vertical = 28.dp),
-        ) {
-            if (state.nextLabel != null) {
-                Text(state.nextLabel, style = MaterialTheme.typography.bodyLarge, color = JellyColors.Muted)
-                Spacer(Modifier.height(8.dp))
-            }
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(formatSeconds(state.positionMs / 1000), style = MaterialTheme.typography.labelLarge)
-                val duration = state.durationMs.coerceAtLeast(1)
-                ProgressBar(state.positionMs.toFloat() / duration, Modifier.weight(1f), buffered = state.bufferedMs.toFloat() / duration)
-                Text(formatSeconds(state.durationMs / 1000), style = MaterialTheme.typography.labelLarge, color = JellyColors.Muted)
-            }
-            if (state.controlsVisible) {
-                Spacer(Modifier.height(16.dp))
-                val first = rememberInitialFocus(state.controlsVisible)
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                    TvButton(if (state.isPlaying) "Pause" else "Play", onClick = vm::togglePlayPause, icon = if (state.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, primary = true, focusRequester = first)
-                    TvButton("10 s", onClick = { vm.seekBy(-PlayerViewModel.SEEK_SHORT_MS) }, icon = Icons.Default.Replay10)
-                    TvButton("10 s", onClick = { vm.seekBy(PlayerViewModel.SEEK_SHORT_MS) }, icon = Icons.Default.Forward10)
-                    TvButton("Subtitles", onClick = { vm.openMenu(PlayerMenu.Subtitles) }, icon = Icons.Default.Subtitles)
-                    TvButton("Audio", onClick = { vm.openMenu(PlayerMenu.Audio) }, icon = Icons.Default.Audiotrack)
-                    Spacer(Modifier.weight(1f))
-                    TvButton("Close", onClick = vm::close, icon = Icons.Default.Close)
+    AnimatedVisibility(visible = state.overlayVisible, enter = fadeIn(), exit = fadeOut()) {
+        Box(Modifier.fillMaxSize()) {
+            // Top: channel bug, title, subtitle.
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)))
+                    .padding(horizontal = 48.dp, vertical = 32.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (state.mode) {
+                        PlaybackMode.Live -> LivePill("LIVE")
+                        PlaybackMode.Recording -> LivePill("RECORDING", color = JellyColors.Rec)
+                        PlaybackMode.Watch -> Unit
+                    }
+                    if (state.playMethod != null) Text(state.playMethod, style = MaterialTheme.typography.labelSmall, color = JellyColors.Muted)
                 }
-            } else {
                 Spacer(Modifier.height(8.dp))
-                Text("Press down for controls · left / right to seek · back to close", style = MaterialTheme.typography.labelSmall, color = JellyColors.Muted)
+                Text(airing.displayTitle, style = MaterialTheme.typography.headlineLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(airing.displaySubtitle, style = MaterialTheme.typography.titleLarge, color = JellyColors.Muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+
+            // Bottom: progress, next, controls.
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))))
+                        .padding(horizontal = 48.dp, vertical = 28.dp),
+                ) {
+                    if (state.nextLabel != null) {
+                        Text(state.nextLabel, style = MaterialTheme.typography.bodyLarge, color = JellyColors.Muted)
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Text(formatSeconds(state.positionMs / 1000), style = MaterialTheme.typography.labelLarge)
+                        val duration = state.durationMs.coerceAtLeast(1)
+                        ProgressBar(state.positionMs.toFloat() / duration, Modifier.weight(1f), buffered = state.bufferedMs.toFloat() / duration)
+                        Text(formatSeconds(state.durationMs / 1000), style = MaterialTheme.typography.labelLarge, color = JellyColors.Muted)
+                    }
+                    if (state.controlsVisible) {
+                        Spacer(Modifier.height(16.dp))
+                        val first = rememberInitialFocus(state.controlsVisible)
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                            TvButton(if (state.isPlaying) "Pause" else "Play", onClick = vm::togglePlayPause, icon = if (state.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, primary = true, focusRequester = first)
+                            TvButton("10 s", onClick = { vm.seekBy(-PlayerViewModel.SEEK_SHORT_MS) }, icon = Icons.Default.Replay10)
+                            TvButton("10 s", onClick = { vm.seekBy(PlayerViewModel.SEEK_SHORT_MS) }, icon = Icons.Default.Forward10)
+                            TvButton("Subtitles", onClick = { vm.openMenu(PlayerMenu.Subtitles) }, icon = Icons.Default.Subtitles)
+                            TvButton("Audio", onClick = { vm.openMenu(PlayerMenu.Audio) }, icon = Icons.Default.Audiotrack)
+                            Spacer(Modifier.weight(1f))
+                            TvButton("Close", onClick = vm::close, icon = Icons.Default.Close)
+                        }
+                    } else {
+                        Spacer(Modifier.height(8.dp))
+                        Text("Press down for controls · left / right to seek · back to close", style = MaterialTheme.typography.labelSmall, color = JellyColors.Muted)
+                    }
+                }
             }
         }
     }

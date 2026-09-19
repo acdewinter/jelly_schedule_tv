@@ -106,6 +106,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.svg)
 
     implementation(libs.jellyfin.core)
     implementation(libs.okhttp)

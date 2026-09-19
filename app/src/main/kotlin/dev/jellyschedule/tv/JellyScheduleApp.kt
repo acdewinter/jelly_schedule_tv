@@ -7,6 +7,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
+import coil3.svg.SvgDecoder
 import dev.jellyschedule.tv.di.AppGraph
 
 class JellyScheduleApp : Application(), SingletonImageLoader.Factory {
@@ -20,7 +21,11 @@ class JellyScheduleApp : Application(), SingletonImageLoader.Factory {
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
-            .components { add(OkHttpNetworkFetcherFactory(callFactory = graph.okHttp)) }
+            .components {
+                add(OkHttpNetworkFetcherFactory(callFactory = graph.okHttp))
+                // The plugin's DevHost serves SVG placeholders; real servers serve JPEG/PNG/WebP.
+                add(SvgDecoder.Factory())
+            }
             .crossfade(true)
             .build()
 }
