@@ -109,6 +109,10 @@ dependencies {
     implementation(libs.coil.svg)
 
     implementation(libs.jellyfin.core)
+    // The Jellyfin SDK logs through kotlin-logging, which needs SLF4J on the classpath: without it the first
+    // request or discovery dies with NoClassDefFoundError. slf4j-android forwards the SDK's logs to logcat.
+    implementation(libs.slf4j.api)
+    runtimeOnly(libs.slf4j.android)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)

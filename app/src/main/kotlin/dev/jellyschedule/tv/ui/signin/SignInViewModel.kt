@@ -53,6 +53,8 @@ class SignInViewModel(private val graph: AppGraph) : ViewModel() {
                 _state.update { it.copy(busy = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(busy = false, error = describe(e)) }
+            } catch (e: LinkageError) {
+                _state.update { it.copy(busy = false, error = "The app is missing a component: $e") }
             }
         }
     }
